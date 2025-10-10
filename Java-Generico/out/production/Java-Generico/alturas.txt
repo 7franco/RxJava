@@ -1,0 +1,30 @@
+Argentina,America,0.59
+Bolivia,America,1.64
+Brasil,America,0.32
+Canadá,America,0.49
+Chile,America,1.87
+Colombia,America,0.59
+Ecuador,America,1.17
+Estados Unidos,America,0.76
+México,America,1.11
+Perú,America,1.55
+Venezuela,America,0.45
+España,Europa,0.65
+Francia,Europa,0.38
+Alemania,Europa,0.26
+Italia,Europa,0.35
+Reino Unido,Europa,0.16
+Noruega,Europa,0.46
+Rusia,Europa/Asia,0.60
+China,Asia,1.84
+Japón,Asia,0.44
+India,Asia,0.44
+Arabia Saudita,Asia,0.66
+Israel,Asia,0.50
+Australia,Oceania,0.33
+Nueva Zelanda,Oceania,0.38
+Sudáfrica,Africa,1.03
+Egipto,Africa,0.32
+Kenia,Africa,0.76
+Marruecos,Africa,0.80
+Etiopía,Africa,1.33
