@@ -12,16 +12,13 @@ import java.util.Optional;
 
 public class ProductDAO {
 
-    private final Connection connection;
     private final CategoryDao categoryDao;
 
-    public ProductDAO(Connection connection, CategoryDao categoryDao) {
-        this.connection = connection;
+    public ProductDAO(CategoryDao categoryDao) {
         this.categoryDao = categoryDao;
     }
 
-
-    public Product save(Product product) throws SQLException {
+    public Product save(Connection connection, Product product) throws SQLException {
         String sql = "INSERT INTO products (name, price, stock, category_id) "+
                 "VALUES (?, ?, ?, ?)  RETURNING id";
         try(
@@ -45,7 +42,7 @@ public class ProductDAO {
         return product;
     }
 
-    public List<Product> findAll() throws SQLException {
+    public List<Product> findAll(Connection connection) throws SQLException {
         String sql = "SELECT p.ID, p.NAME, p.PRICE, p.stock, p.category_id, c.NAME as category_name\n" +
                 " FROM products p JOIN categories c on p.category_id = c.id";
         List<Product> products = new ArrayList<>();
@@ -63,7 +60,7 @@ public class ProductDAO {
         return products;
     }
 
-    public void update(Product product) throws SQLException {
+    public void update(Connection connection, Product product) throws SQLException {
         String sql = "UPDATE products SET name=?, price=?, stock=?, category_id=? " +
                 " WHERE id = ?";
         try(
@@ -79,7 +76,7 @@ public class ProductDAO {
         }
     }
 
-    public void delete(Long id) throws SQLException {
+    public void delete(Connection connection, Long id) throws SQLException {
         String sql = "DELETE FROM products where id=?";
         try(PreparedStatement statement = connection.prepareStatement(sql)){
             statement.setLong(1, id);
@@ -88,7 +85,7 @@ public class ProductDAO {
         }
     }
 
-    public boolean existById(Long id){
+    public boolean existById(Connection connection, Long id){
         if(id == null)return false;
         String sql = "Select Count(*) from products where id=?";
         List<Category> products = new ArrayList<>();
@@ -108,7 +105,7 @@ public class ProductDAO {
         return false;
     }
 
-    public Optional<Product> findById(Long id) throws SQLException {
+    public Optional<Product> findById(Connection connection, Long id) throws SQLException {
         String sql = "SELECT p.ID, p.NAME, p.PRICE, p.stock, p.category_id, c.NAME as category_name\n" +
                 " FROM products p JOIN categories c on p.category_id = c.id " +
                 " WHERE p.id=?";
@@ -127,7 +124,7 @@ public class ProductDAO {
         return Optional.empty();
     }
 
-    public List<Product> findByCategoryId(Long categoryId) throws SQLException {
+    public List<Product> findByCategoryId(Connection connection, Long categoryId) throws SQLException {
         String sql = "SELECT p.ID, p.NAME, p.PRICE, p.stock, p.category_id, c.NAME as category_name\n" +
                 " FROM products p JOIN categories c on p.category_id = c.id " +
                 " WHERE p.category_id=?";

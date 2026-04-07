@@ -1,6 +1,8 @@
 package org.franco.proyecto.product.repository;
 
+import lombok.Getter;
 import org.franco.proyecto.category.persistence.CategoryDao;
+import org.franco.proyecto.db.ConnetionPool;
 import org.franco.proyecto.product.exceptions.InvalidProductException;
 import org.franco.proyecto.product.exceptions.ProductNotFoundException;
 import org.franco.proyecto.product.interfaces.ProductRepository;
@@ -14,16 +16,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Getter
 public class ProductRepositoryServices implements ProductRepository {
 
     private final List<Product> products ;
     private final ProductDAO productDAO;
     private final CategoryDao categoryDao;
 
-    public ProductRepositoryServices(Connection connection, CategoryDao categoryDao) throws SQLException {
-        productDAO = new ProductDAO(connection, categoryDao);
-        products = productDAO.findAll();
+    public ProductRepositoryServices(CategoryDao categoryDao) throws SQLException, InvalidProductException {
+        productDAO = new ProductDAO(categoryDao);
         this.categoryDao = categoryDao;
+        try(Connection connection = ConnetionPool.getConnection()){
+            products = productDAO.findAll(connection);
+        }catch (SQLException e){
+            throw new InvalidProductException("Error al inicializar la lista: " +e.getMessage());
+        }
+
     }
 
     @Override
@@ -34,18 +42,6 @@ public class ProductRepositoryServices implements ProductRepository {
         return products;
     }
 
-    public List<Product> getProducts() {
-        return products;
-    }
-
-    public ProductDAO getProductDAO() {
-        return productDAO;
-    }
-
-    public CategoryDao getCategoryDao() {
-        return categoryDao;
-    }
-
     @Override
     public Optional<Product> findById(Long id) {
         return products.stream()
@@ -53,20 +49,22 @@ public class ProductRepositoryServices implements ProductRepository {
                 .findFirst();
     }
 
-    public Optional<Product> findByIdDB(Long id) throws SQLException {
-        return productDAO.findById(id);
+    @Override
+    public Optional<Product> findByIdDB(Connection connection, Long id) throws SQLException {
+        return productDAO.findById(connection, id);
     }
 
     @Override
-    public void save(Product product) throws SQLException {
-        productDAO.save(product);
-        products.add(product);
+    public Product save(Connection connection, Product product) throws SQLException {
+        Product newProduct = productDAO.save(connection, product);
+        products.add(newProduct);
+        return newProduct;
     }
 
     @Override
-    public void delete(Long id) throws SQLException {
+    public void delete(Connection connection,Long id) throws SQLException {
         products.removeIf(product -> product.getId().equals(id));
-        productDAO.delete(id);
+        productDAO.delete(connection, id);
     }
 
     @Override
@@ -75,13 +73,13 @@ public class ProductRepositoryServices implements ProductRepository {
     }
 
     @Override
-    public void update(Optional<Product> product) throws ProductNotFoundException, SQLException {
+    public void update(Connection connection, Optional<Product> product) throws ProductNotFoundException, SQLException {
         if(product.isPresent()){
             Long idToUpdate = product.get().getId();
             int index = findIndexById(idToUpdate);
             if(index != -1){
                 products.set(index, product.get());
-                productDAO.update(product.get());
+                productDAO.update(connection, product.get());
             }else{
                 throw new ProductNotFoundException("El producto que quiere actualizar no existe");
             }
@@ -97,7 +95,7 @@ public class ProductRepositoryServices implements ProductRepository {
 
     private int findIndexById(Long id){
         for (int i=0; i < products.size(); i++){
-            if(products.get(i).equals(id)){
+            if(products.get(i).getId().equals(id)){
                 return i;
             }
         }

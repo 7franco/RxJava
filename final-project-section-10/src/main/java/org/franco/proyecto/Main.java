@@ -4,6 +4,7 @@ import org.franco.proyecto.category.model.Category;
 import org.franco.proyecto.category.persistence.CategoryDao;
 import org.franco.proyecto.db.ConnetionPool;
 import org.franco.proyecto.product.controller.ProductController;
+import org.franco.proyecto.product.exceptions.InvalidProductException;
 import org.franco.proyecto.product.interfaces.ProductRepository;
 import org.franco.proyecto.product.repository.ProductRepositoryServices;
 import org.franco.proyecto.product.service.ProductService;
@@ -17,17 +18,18 @@ import java.util.List;
 // click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
     static void main() throws SQLException {
-        try(Connection connection = ConnetionPool.getConnection()){
-            System.out.println("Coneccion exitosa!");
-            CategoryDao categoryDao = new CategoryDao(connection);
-            ProductRepository productRepository = new ProductRepositoryServices(connection, categoryDao);
+        try{
+            CategoryDao categoryDao = new CategoryDao();
+            ProductRepository productRepository = new ProductRepositoryServices(categoryDao);
             ProductService productService = new ProductService(productRepository);
             ProductController productController = new ProductController(productService);
             ProductView productView =new ProductView(productController);
             productView.showMenu();
         }catch (SQLException e){
             System.out.println(e.getMessage());
-        }finally {
+        } catch (InvalidProductException e) {
+            throw new RuntimeException(e);
+        } finally {
             ConnetionPool.closePool();
         }
 

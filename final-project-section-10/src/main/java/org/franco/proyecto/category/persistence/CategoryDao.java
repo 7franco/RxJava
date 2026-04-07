@@ -10,13 +10,12 @@ import java.util.Optional;
 
 public class CategoryDao {
 
-    private final Connection connection;
+//    private final Connection connection;
+//    public CategoryDao(Connection connection) {
+//        this.connection = connection;
+//    }
 
-    public CategoryDao(Connection connection) {
-        this.connection = connection;
-    }
-
-    public Optional<Category> save(Category category) throws SQLException {
+    public Optional<Category> save(Connection connection, Category category) throws SQLException {
         String sql = "INSERT INTO categories (name)"+
                 "VALUES (?)";
         try (
@@ -43,11 +42,11 @@ public class CategoryDao {
         return Optional.empty();
     }
 
-    public List<Category> findAll(){
+    public List<Category> findAll(Connection connection){
         String sql = "SELECT * FROM categories";
         List<Category> categories = new ArrayList<>();
         try (
-                Connection connection =  ConnetionPool.getConnection();
+//                Connection connection =  ConnetionPool.getConnection();
                 PreparedStatement statement = connection.prepareStatement(sql);
                 ResultSet resultSet = statement.executeQuery()
 
@@ -67,12 +66,11 @@ public class CategoryDao {
         return categories;
     }
 
-    void update(Category category){
+    void update(Connection connection, Category category){
         String sql = "UPDATE categories SET name=? WHERE id = ?";
 
         try (
-                Connection connectionDB =  ConnetionPool.getConnection();
-                PreparedStatement statement = connectionDB.prepareStatement(sql)
+                PreparedStatement statement = connection.prepareStatement(sql)
         ){
 
             statement.setString(1, category.getName());
@@ -86,13 +84,11 @@ public class CategoryDao {
         }
     }
 
-    void delete(Long id){
+    void delete(Connection connection, Long id){
         String sql = "DELETE FROM categories where id=?";
 
         try (
-//                Connection connectionDB =  ConnectionDB.connection();
-                Connection connectionDB =  ConnetionPool.getConnection();
-                PreparedStatement statement = connectionDB.prepareStatement(sql)
+                PreparedStatement statement = connection.prepareStatement(sql)
         ){
 
             statement.setLong(1, id);
@@ -105,7 +101,7 @@ public class CategoryDao {
         }
     }
 
-    public Optional<Category> findById(Long id){
+    public Optional<Category> findById(Connection connection, Long id){
         String sql = "Select * from categories where id=?";
         List<Category> categories = new ArrayList<>();
         try (
@@ -127,7 +123,7 @@ public class CategoryDao {
         }
     }
 
-    public Optional<Category> findCategoryByName(String categoryName){
+    public Optional<Category> findCategoryByName(Connection connection, String categoryName){
         String sql = "Select * from categories where name=?";
         List<Category> categories = new ArrayList<>();
         try (

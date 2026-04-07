@@ -135,7 +135,6 @@ public class ProductView {
                     }
                 }
                 productController.updateProduct(product1);
-
             }else {
                 System.out.println("EL producto no se encuentra en la BD");
             }
