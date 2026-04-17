@@ -1,3 +1,5 @@
+package Genericos;
+
 public class Box<T> {
     
     private T value;
@@ -17,7 +19,7 @@ public class Box<T> {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Box{");
+        sb.append("Genericos.Box{");
         sb.append("value=").append(value);
         sb.append('}');
         return sb.toString();
