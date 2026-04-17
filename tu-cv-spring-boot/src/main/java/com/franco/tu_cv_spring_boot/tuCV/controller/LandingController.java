@@ -17,6 +17,11 @@ public class LandingController {
 
     private final CvInitializationServices cvInitializationServices;
 
+    @GetMapping("/")
+    public String redirectToForm(){
+        return "redirect:/cv-form";
+    }
+
     @GetMapping("/cv-form")
     public String showFormCV(Model model){
         CvData cvData = cvInitializationServices.initilizeCvData();

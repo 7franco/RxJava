@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"  lang="es">
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>CV Generator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/css/style.css}">
+    <title>Document</title>
 </head>
 <body>
-<h1>My CV</h1>
 
 <section>
     <h2>Personal Details</h2>
@@ -14,77 +14,66 @@
         <img th:src="@{/img/fotocv.png}" alt="Your Profile Picture" width="150">
     </div>
     <div>
-        <strong>First Name:</strong> Gabriel
+        <strong>First Name:</strong> <span th:text="${cvData.personalDetails.firstName}" ></span>
     </div>
     <div>
-        <strong>Last Name:</strong> Chaldu
+        <strong>Last Name:</strong> <span th:text="${cvData.personalDetails.lastName}"></span>
     </div>
     <div>
-        <strong>Email:</strong> gabriel@example.com
+        <strong>Email:</strong> <span th:text="${cvData.personalDetails.email}"></span>
     </div>
     <div>
-        <strong>Profile:</strong> Full Stack Developer with expertise in Java, Spring Boot, and Angular.
+        <strong>Profile:</strong> <span th:text="${cvData.personalDetails.professionalProfile}"></span>
     </div>
 </section>
-
 <section>
     <h2>Education</h2>
-    <div class="cv-item">
-        <h3>Education 1</h3>
+    <div class="cv-item" th:each="education, stat : ${cvData.educations}" >
+        <h3>Education <span th:text="${stat.index + 1}"></span></h3>
         <div>
-            <strong>Institution:</strong> UTN Mar del Plata
+            <strong>Institution:</strong> <span th:text="${education.institution}"> </span>
         </div>
         <div>
-            <strong>Degree:</strong> Ingeniería en Sistemas
+            <strong>Degree:</strong> <span th:text="${education.degree}"></span>
         </div>
         <div>
-            <strong>Period:</strong> 2010 - 2016
+            <strong>Period:</strong> <span th:text="${education.period}"></span>
         </div>
-        <div>
-            <strong>Description:</strong> Formación académica en programación, redes y arquitectura de sistemas.
+        <div th:if="${education.description != null and !education.description.trim().isEmpty()}">
+            <strong>Description:</strong> <span th:text="${education.description}"></span>
         </div>
     </div>
 </section>
-
 <section>
     <h2>Experience</h2>
-    <div class="cv-item">
-        <h3>Experience 1</h3>
+    <div th:each="experience, stat : ${cvData.experiences}" class="cv-item">
+        <h3>Experience <span th:text="${stat.index + 1}"></span></h3>
         <div>
-            <strong>Job Title:</strong> Profesor de Programación
+            <strong>Job Title:</strong> <span th:text="${experience.jobTitle}"></span>
         </div>
         <div>
-            <strong>Company:</strong> UTN Facultad Regional Mar del Plata
+            <strong>Company:</strong> <span th:text="${experience.company}"></span>
         </div>
         <div>
-            <strong>Period:</strong> 2018 - Presente
+            <strong>Period:</strong> <span th:text="${experience.period}"></span>
         </div>
-        <div>
-            <strong>Description:</strong> Enseñanza de tecnologías backend y frontend a estudiantes universitarios.
+        <div th:if="${experience.description}">
+            <strong>Description:</strong> <span th:text="${experience.description}"></span>
         </div>
     </div>
 </section>
 
 <section>
     <h2>Skills</h2>
-    <div class="cv-item">
+    <div th:each="skill, stat : ${cvData.skills}" class="cv-item">
         <div>
-            <strong>Skill:</strong> Java
+            <strong>Skill:</strong> <span th:text="${skill.name}"></span>
         </div>
         <div>
-            <strong>Level:</strong> Avanzado
-        </div>
-    </div>
-    <div class="cv-item">
-        <div>
-            <strong>Skill:</strong> Angular
-        </div>
-        <div>
-            <strong>Level:</strong> Intermedio
+            <strong>Level:</strong> <span th:text="${skill.level}"></span>
         </div>
     </div>
 </section>
-
 <section>
     <h2>Connect with me</h2>
     <div class="social-links">
