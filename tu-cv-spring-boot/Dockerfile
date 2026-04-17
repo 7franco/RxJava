@@ -8,6 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Ejecuta Maven para limpiar y compilar el proyecto, generando el .jar (sin tests)
+RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
 # Etapa de ejecución: usar solo JRE para correr la aplicación en producción
