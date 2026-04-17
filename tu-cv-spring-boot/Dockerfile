@@ -1,27 +1,24 @@
-# Etapa de construcción: compilar la aplicación con JDK
+# --- Etapa de construcción ---
 FROM eclipse-temurin:21-jdk AS build
-
-# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia todos los archivos del proyecto al contenedor
-COPY . .
-
-# Ejecuta Maven para limpiar y compilar el proyecto, generando el .jar (sin tests)
+# 1. Copiar solo el wrapper y el pom primero para aprovechar el caché de capas
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
+# Dar permisos y descargar dependencias (esto se saltará si no cambias el pom.xml)
 RUN chmod +x mvnw
+RUN ./mvnw dependency:go-offline
+
+# 2. Copiar el código fuente y compilar
+COPY src ./src
 RUN ./mvnw clean package -DskipTests
 
-# Etapa de ejecución: usar solo JRE para correr la aplicación en producción
+# --- Etapa de ejecución ---
 FROM eclipse-temurin:21-jre
-
-# Establece el directorio de trabajo en esta nueva imagen
 WORKDIR /app
 
-# Copia el archivo .jar generado en la etapa anterior al directorio actual y lo renombra
-COPY --from=build /app/target/*.jar pepe.jar
+# 3. Copiar el jar (ajusta el nombre si sabes el exacto para evitar conflictos de comodines)
+COPY --from=build /app/target/*.jar app.jar
 
-# Expone el puerto 8080 para acceder a la aplicación
 EXPOSE 8080
-
-# Comando para ejecutar la aplicación cuando se inicie el contenedor
-CMD ["java", "-jar", "pepe.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
